@@ -1,6 +1,6 @@
 import pytest
 from system import System
-
+# validate password 
 def test_validate_valid_password():
       system = System(loggedOn=False)
       # Call the validate function with a valid password
@@ -9,7 +9,7 @@ def test_validate_valid_password():
       result = system.validatePassword(valid_password,valid_password_again)
       # Assert that the result is True
       assert result is True
-
+# test invalid password 
 def test_validate_invalid_password():
         system = System(loggedOn=False)
         # Call the validate function with an invalid password
