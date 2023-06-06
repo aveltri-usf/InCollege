@@ -103,7 +103,7 @@ class System:
     if not re.search("[0-9]", password):
       print("Password must contain at least one number")
       return False 
-    if not re.search("[!@#$%^&*()_+]", password):
+    if not re.search("!@#$%^&*()_+-=[]{}|;:,.<>/?`~\'\"\\", password):
       print("Password must contain at least one special character")
       return False
     return True
@@ -116,7 +116,7 @@ class System:
         return False
        #arbitrary limit 
       if len(userName) < 1 or len(userName) > 25:
-        print("Username must be less than 25 Characters in Length")
+        print("Username must be 1-25 Characters in Length")
         return False
       return True
 
