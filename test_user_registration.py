@@ -34,7 +34,7 @@ def temp_remove_accounts(system_instance):
 # @param num_digits - the number of digits in the string
 # @param num_special - the number of special characters in the string
 def generate_random_string(length, num_upper, num_digits, num_special):
-    special = r'[\!@#\$%\^&\*\(\)_\+\-\=\[\]\{\}\|\;\:\,\.\<\>\/\?\`\~\'\"\\]'
+    special = '!@#$%^&*()_+-=[]{}|;:,.<>/?`~\'\"\\'
     selected_chars = []
     # exception sum of number of uppercase, digits, and specials must not exceed string length
     if length < (num_upper + num_digits + num_special):
