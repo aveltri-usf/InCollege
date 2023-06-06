@@ -103,7 +103,7 @@ class System:
     if not re.search("[0-9]", password):
       print("Password must contain at least one number")
       return False 
-    if not re.search("!@#$%^&*()_+-=[]{}|;:,.<>/?`~\'\"\\", password):
+    if not re.search(r'[\!@#\$%\^&\*\(\)_\+\-\=\[\]\{\}\|\;\:\,\.\<\>\/\?\`\~\'\"\\]', password):
       print("Password must contain at least one special character")
       return False
     return True

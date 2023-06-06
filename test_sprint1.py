@@ -223,8 +223,7 @@ def temp_remove_accounts(system_instance):
 # @param num_digits - the number of digits in the string
 # @param num_special - the number of special characters in the string
 def generate_random_string(length, num_upper, num_digits, num_special):
-    special = '!@#$%^&*()_+-=[]{}|;:,.<>/?`~\'\"\\'
-    # special = '!@#$%^&*()_+'
+    special = r'[\!@#\$%\^&\*\(\)_\+\-\=\[\]\{\}\|\;\:\,\.\<\>\/\?\`\~\'\"\\]'
     selected_chars = []
     # exception sum of number of uppercase, digits, and specials must not exceed string length
     if length < (num_upper + num_digits + num_special):
@@ -292,8 +291,7 @@ def test_validate_password(system_instance, capfd):
 
 # test that usernames are properly validated based on their length
 def test_validate_username_length(system_instance, capfd):
-    # usr_length_msg = "Username must be less than 25 Characters in Length"
-    usr_length_msg = "Username must be between 1 and 25 Characters in Length"
+    usr_length_msg = "Username must be 1-25 Characters in Length"
     min_len, max_len = 1, 25
     # no username / too short
     username = ''
@@ -394,7 +392,7 @@ def test_register_success(system_instance, capfd, temp_remove_accounts):
 # tests that registration fails when username is invalid
 def test_register_fail_username(system_instance, capfd, temp_remove_accounts):
     # msg_username_length = "Username must be less than 25 Characters in Length"
-    msg_username_length = "Username must be between 1 and 25 Characters in Length"
+    msg_username_length = "Username must be 1-25 Characters in Length"
     msg_usr_not_unique = "Username has been taken."
     user_query = "SELECT * FROM accounts WHERE username = ?"
     # username too short (none)
