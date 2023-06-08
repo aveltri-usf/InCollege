@@ -50,7 +50,7 @@ class System:
     self.cursor.execute("CREATE TABLE IF NOT EXISTS accounts (username varchar2(25) PRIMARY KEY, password varchar2(12))") #execute method and cursor object are used to create table if one does not exist
     self.conn.commit() #commit method used to save changes
     ##Instantiate User Class Here ???
-    self.loggedOn = loggedOn
+    self.loggedOn = loggedOn #just testing again
     self.mediator = MenuMediator()
 
   def __del__(self): #closes connection to db
