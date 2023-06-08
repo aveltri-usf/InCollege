@@ -50,9 +50,29 @@ class System:
     self.cursor.execute("CREATE TABLE IF NOT EXISTS accounts (username varchar2(25) PRIMARY KEY, password varchar2(12))") #execute method and cursor object are used to create table if one does not exist
     self.conn.commit() #commit method used to save changes
     ##Instantiate User Class Here ???
-    self.loggedOn = loggedOn #just testing again
-    self.mediator = MenuMediator()
 
+    # SQL code to create the jobs table if one does not exist
+    create_jobs_table = """
+    CREATE TABLE IF NOT EXISTS jobs (
+      title VARCHAR(128) PRIMARY KEY,
+      description TEXT,
+      employer VARCHAR(128) NOT NULL,
+      location VARCHAR(128) NOT NULL,
+      salary DECIMAL(10, 2) NOT NULL,
+      poster_first_name VARCHAR(128),
+      poster_last_name VARCHAR(128)
+    );
+    """
+    
+    # Execute the SQL code
+    self.cursor.execute(create_jobs_table)
+    
+    # Commit the transaction
+    self.conn.commit()
+
+    self.loggedOn = loggedOn
+    self.mediator = MenuMediator()
+  
   def __del__(self): #closes connection to db
     self.conn.close() #closes connection to database
     
@@ -234,3 +254,13 @@ class System:
   def skillE(self):
       print("Learn Skill E")
       print("Under Construction")
+
+
+class Jobs:
+    def __init__(self, title, employer, location, salary, poster, description=None):
+        self.title = title
+        self.description = description
+        self.employer = employer
+        self.location = location
+        self.salary = salary
+        self.poster = poster
