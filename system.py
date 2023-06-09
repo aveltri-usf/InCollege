@@ -59,8 +59,8 @@ class System:
       employer VARCHAR(128) NOT NULL,
       location VARCHAR(128) NOT NULL,
       salary DECIMAL(10, 2) NOT NULL,
-      poster_first_name VARCHAR(128),
-      poster_last_name VARCHAR(128)
+      posterFirstName VARCHAR(128),
+      posterLastName VARCHAR(128)
     );
     """
     
@@ -257,10 +257,11 @@ class System:
 
 
 class Jobs:
-    def __init__(self, title, employer, location, salary, poster, description=None):
+    def __init__(self, title, employer, location, salary, posterFirstName, posterLastName, description=None):
         self.title = title
         self.description = description
         self.employer = employer
         self.location = location
         self.salary = salary
-        self.poster = poster
+        self.posterFirstName = posterFirstName
+        self.posterLastName = posterLastName
