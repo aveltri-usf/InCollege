@@ -125,8 +125,11 @@ class System:
   def validName(self,fName,lName):
     if len(fName) < 1 or len(fName) > 23:
       print("First Name Must Be 1-23 Characters In Length")
+      return False
     if len(lName) < 1 or len(lName) > 23:
       print("Last Name Must Be 1-23 Characters In Length")
+      return False
+    return True
 
   def validatePassword(self, password,password_check): #validate password
     ## Confirm
@@ -280,4 +283,4 @@ class System:
       self.joinMenu.setOpening("Would you like to join your friends on InCollege?")
       self.joinMenu.setSelection('1',{'label':'Login','action':self.login})
       self.joinMenu.setSelection('2',{'label':'Register','action':self.register})
-      self.joinMenu.setSelection('3',{'label':'Return to Welcome Menu','action':self.homePage})
+      self.joinMenu.setSelection('3',{'label':'Return to Welcome Menu','action':self.home_page})
