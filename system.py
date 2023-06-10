@@ -65,6 +65,7 @@ class System:
     self.videoMenu = Menu()
     self.skillsMenu = Menu()
     self.guestSearch = Menu()
+    self.joinMenu = Menu()
     
   def __del__(self): #closes connection to db
     self.conn.close() #closes connection to database
@@ -84,6 +85,8 @@ class System:
       self.videoMenu.start()
   def skills_menu(self):
       self.skillsMenu.start()
+  def join_menu(self):
+      self.joinMenu.start()
     
   def encryption(self, password):
     sha256 = hashlib.sha256()
@@ -222,10 +225,12 @@ class System:
 
     #If the user is found, print 
     if len(result) > 0:
-        print("They are part of the InCollege system.")
+      print("They are part of the InCollege system.")
+      self.join_menu()
     else:
-        print("They are not yet a part of the InCollege system.")
-    self.home_page()
+      print("They are not yet a part of the InCollege system.")
+      self.home_page()
+    
     
   
   ## Sub Menu
@@ -272,9 +277,7 @@ class System:
       self.skillsMenu.setSelection('3',{'label':'System Design','action':self.skillC})
       self.skillsMenu.setSelection('4',{'label':'Coding','action':self.skillD})
       self.skillsMenu.setSelection('5',{'label':'Professional Communication','action':self.skillE})
-
-
-      
-    
-    
-  
+      self.joinMenu.setOpening("Would you like to join your friends on InCollege?")
+      self.joinMenu.setSelection('1',{'label':'Login','action':self.login})
+      self.joinMenu.setSelection('2',{'label':'Register','action':self.register})
+      self.joinMenu.setSelection('3',{'label':'Return to Welcome Menu','action':self.homePage})
