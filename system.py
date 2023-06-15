@@ -4,6 +4,9 @@ import hashlib
 from user import User
 import os
 
+#list of languages currently supported by InCollege
+LANGUAGES = ('English', 'Spanish')
+
 class Jobs:
     def __init__(self, title, employer, location, salary, posterFirstName, posterLastName, description=None):
         self.title = title
@@ -104,12 +107,12 @@ class System:
     self.conn.commit()
 
     #create trigger add account settings trigger on accounts table
-    trigger_add_settings = """
+    trigger_add_settings = f"""
     CREATE TRIGGER IF NOT EXISTS add_acc_settings
     AFTER INSERT ON accounts
     BEGIN
       INSERT INTO account_settings (username, email, sms, targetedAds, language)
-      VALUES(NEW.username, True, True, True, 'English');
+      VALUES(NEW.username, True, True, True, {LANGUAGES[0]});
     END;
     """
     self.cursor.execute(trigger_add_settings)
@@ -263,14 +266,24 @@ class System:
       print("Enter Password: ")
       password = input()
       ##Validate User Name and Password then Search
-      self.cursor.execute("SELECT * FROM accounts WHERE username = ?", (userName,)) 
+      acc_fields = 'username, password, fName, lName, email, sms, targetedAds, language'
+      select_account = f"""
+        SELECT {acc_fields} FROM accounts NATURAL JOIN account_settings WHERE username = (?)
+      """
+      self.cursor.execute(select_account, (userName,)) 
       #? is placeholder for username
       account = self.cursor.fetchone() #fetches first row which query returns
       if account: #if the username exists, then we check that the password in the database matches the password the user inputted
         hashed_inputpass = self.encryption(password)
         if hashed_inputpass == account[1]:
           print("You Have Successfully Logged In!")
-          self.user.login(userName,account[2],account[3])
+          self.user.login(userName,
+                          fName=account[2],
+                          lName=account[3], 
+                          email=account[4], 
+                          sms=account[5], 
+                          targetedAds=account[6], 
+                          language=account[7])
           self.home_page()
         else:
           print("Invalid Username/Password, Try Again!")
