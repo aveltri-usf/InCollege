@@ -89,6 +89,43 @@ class System:
     
     # Commit the transaction
     self.conn.commit()
+
+    #create account settings table
+    table_acc_settings = """
+    CREATE TABLE IF NOT EXISTS account_settings (
+      username VARCHAR(25) PRIMARY KEY, 
+      email BOOLEAN,
+      sms BOOLEAN,
+      targetedAds BOOLEAN,
+      language VARCHAR(12),
+      FOREIGN KEY(username) REFERENCES accounts(username));
+    """
+    self.cursor.execute(table_acc_settings)
+    self.conn.commit()
+
+    #create trigger add account settings trigger on accounts table
+    trigger_add_settings = """
+    CREATE TRIGGER IF NOT EXISTS add_acc_settings
+    AFTER INSERT ON accounts
+    BEGIN
+      INSERT INTO account_settings (username, email, sms, targetedAds, language)
+      VALUES(NEW.username, True, True, True, 'English');
+    END;
+    """
+    self.cursor.execute(trigger_add_settings)
+    self.conn.commit()
+
+     #create trigger remove account settings trigger on accounts table
+    trigger_add_settings = """
+    CREATE TRIGGER IF NOT EXISTS rm_acc_settings
+    AFTER DELETE ON accounts
+    BEGIN
+      DELETE FROM account_settings WHERE username = OLD.username;
+    END;
+    """
+    self.cursor.execute(trigger_add_settings)
+    self.conn.commit()
+    
     ## Instantiate User Class Here
     self.user = User("guest","","",False)
     ## Menus
