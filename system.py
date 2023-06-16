@@ -48,7 +48,10 @@ class Menu:
     def displaySelections(self):
       print(self.opening)
       for hotKey,selection in self.selections.items():
-        print("["+hotKey+"] "+ selection['label'])
+        label = selection['label']
+        if callable(label):  #allow functions to be used as dynamic labels
+          label = label()
+        print("["+hotKey+"] "+ label)
       print("[0] " + self.exitStatement)
     ## Display List  
     def start(self):
