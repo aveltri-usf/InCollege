@@ -53,21 +53,26 @@ class Menu:
     ## Display List  
     def start(self):
     ## Main Menu Loop
-      
+      selection = None
       while True:
-        self.displaySelections()
-        selection = input()
+        #only display selections and get user input if the previous selection did not set a new selection
+        if selection is None:  
+          self.displaySelections()
+          selection = input()
         if(selection == '0'):
           print("Exiting")
           self.clear()
           break
-        if selection in self.selections:
+        elif callable(selection): #the previous selection returned another function
+          selection = selection()
+        elif selection in self.selections:
           self.clear()
           thisSelection = self.selections[selection]
           menuItem = thisSelection['action']
-          menuItem()
+          selection = menuItem()  #allow the current selecton to request another function & bypass user input
         else:
           print("Invalid Input. Please Try Again")
+          selection = None
  
 class System:
   def __init__(self): #create and connect to db
@@ -284,7 +289,7 @@ class System:
                           sms=account[5], 
                           targetedAds=account[6], 
                           language=account[7])
-          self.home_page()
+          return self.home_page
         else:
           print("Invalid Username/Password, Try Again!")
       else:
@@ -311,8 +316,7 @@ class System:
       self.cursor.execute("INSERT INTO accounts (username, password,fName,lName) VALUES (?, ?, ?, ?)", (username, encrypted_pass,fName,lName))
       self.conn.commit() #saving new account to database
       print("Account created successfully.")
-      self.login()
-      return 
+      return self.login
     else:
       print("Account Creation Failed.")
     return
