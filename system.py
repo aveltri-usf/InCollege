@@ -116,12 +116,14 @@ class System:
     self.conn.commit()
 
     #create trigger add account settings trigger on accounts table
+    default_lang = LANGUAGES[0].replace("'", "''")
+    default_lang = f"'{default_lang}'"
     trigger_add_settings = f"""
     CREATE TRIGGER IF NOT EXISTS add_acc_settings
     AFTER INSERT ON accounts
     BEGIN
       INSERT INTO account_settings (username, email, sms, targetedAds, language)
-      VALUES(NEW.username, True, True, True, {LANGUAGES[0]});
+      VALUES(NEW.username, True, True, True, {default_lang});
     END;
     """
     self.cursor.execute(trigger_add_settings)
