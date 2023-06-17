@@ -6,6 +6,7 @@ import os
 
 #list of languages currently supported by InCollege
 LANGUAGES = ('English', 'Spanish')
+MSG_ERR_RETRY = "Your Request Could Not Be Competed at This Time.\nPlease Try Again Later."
 
 class Jobs:
     def __init__(self, title, employer, location, salary, posterFirstName, posterLastName, description=None):
@@ -147,6 +148,7 @@ class System:
     self.videoMenu = Menu()
     self.skillsMenu = Menu()
     self.joinMenu = Menu()
+    self.guestControls = Menu()
     
   def __del__(self): #closes connection to db
     self.conn.close()
@@ -176,6 +178,8 @@ class System:
       self.videoMenu.start()
   def skills_menu(self):
       self.skillsMenu.start()
+  def guest_controls(self):
+      self.guestControls.start()
     
   def encryption(self, password):
     sha256 = hashlib.sha256()
@@ -386,6 +390,59 @@ class System:
   def skillE(self):
       print("Professional Communication")
       print("Under Construction")
+
+  
+  def setUserEmail(self):
+    """
+    Toggles the user's email setting between True (ON) and False (OFF). 
+    If an exception occurs when updating the DB then no change is made, 
+    and a message is displayed informing the user to try again later.
+    """
+    username = self.user.userName
+    newEmail = not self.user.email
+    update = 'UPDATE account_settings SET email = ? WHERE username = ?'
+    try:
+      self.cursor.execute(update, (newEmail, username))
+      self.conn.commit()
+      self.user.email = newEmail
+    except Exception:
+      print(MSG_ERR_RETRY)
+
+  
+  def setUserSMS(self):
+    """
+    Toggles the user's sms setting between True (ON) and False (OFF). 
+    If an exception occurs when updating the DB then no change is made, 
+    and a message is displayed informing the user to try again later.
+    """
+    username = self.user.userName
+    newSMS = not self.user.sms
+    update = 'UPDATE account_settings SET sms = ? WHERE username = ?'
+    try:
+      self.cursor.execute(update, (newSMS, username))
+      self.conn.commit()
+      self.user.sms = newSMS
+    except Exception:
+      print(MSG_ERR_RETRY)
+
+
+  def setUserTargetedAds(self):
+    """
+    Toggles the user's targeted advertising setting between True (ON) and False (OFF). 
+    If an exception occurs when updating the DB then no change is made, 
+    and a message is displayed informing the user to try again later.
+    """
+    username = self.user.userName
+    newtargetedAds = not self.user.targetedAds
+    update = 'UPDATE account_settings SET targetedAds = ? WHERE username = ?'
+    try:
+      self.cursor.execute(update, (newtargetedAds, username))
+      self.conn.commit()
+      self.user.targetedAds = newtargetedAds
+    except Exception:
+      print(MSG_ERR_RETRY)
+
+      
   def initMenu(self):
       ## Set Home Page Items
       hpOpening = """
@@ -431,8 +488,19 @@ class System:
       self.jobsMenu.setOpening("Welcome to the Job Postings Page")
       self.jobsMenu.setSelection('1',{'label':'Post Job','action':self.postJob})
       self.jobsMenu.setExitStatement("Return To Main Menu")
-      
-
+      # set Guest Controls Items  
+      self.guestControls.setOpening("Account Preferences:\n")
+      self.guestControls.setSelection(
+        '1', {'label': (lambda: f"Email [{'ON' if self.user.email else 'OFF'}]"), 'action': self.setUserEmail}
+      )
+      self.guestControls.setSelection(
+        '2', {'label': (lambda: f"SMS [{'ON' if self.user.sms else 'OFF'}]"), 'action': self.setUserSMS}
+      )
+      self.guestControls.setSelection(
+        '3', {'label': (lambda: f"Targeted Advertising [{'ON' if self.user.targetedAds else 'OFF'}]"), 
+              'action': self.setUserTargetedAds}
+      )
+      self.guestControls.setExitStatement("Back")
 
       
     
