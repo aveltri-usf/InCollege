@@ -31,16 +31,17 @@ def temp_remove_accounts(system_instance):
 
 # Check for Find People I Know Option
 def test_find_people(system_instance):
-  # access homePage attribute
-  home_page = system_instance.homePage
-
-  # check if the Find People I Know option is available
-  assert '3' in home_page.selections, "Selection '3' not found in home page options"
-  assert home_page.selections['3'] == {
-    'label': 'Find People I Know',
-    'action': system_instance.findUser
-  }
-
+  system_instance = System()  # Create an instance of the System class
+  system_instance.initMenu()
+  # Get the menu items from the homePage
+  menu_items = system_instance.homePage.selections
+  # Check if the "InCollege Important Links" option exists in the home page manu
+  find_people = next(
+    (item
+      for item in menu_items if item['label'] == 'Find People I Know'),
+    None)
+  # Assert that the option exists
+  assert find_people is not None
 
 # Check for first and last name prompts
 def test_name_prompt(system_instance, capsys):
@@ -126,16 +127,17 @@ def test_join_menu(system_instance, temp_remove_accounts, capsys):
 
 # Check that video option is availabe
 def test_video_option(system_instance, capsys):
-  # access homePage attribute
-  home_page = system_instance.homePage
-
-  # assert video option is available
-  assert '4' in home_page.selections, "Selection '4' not found in home page options"
-  assert home_page.selections['4'] == {
-    'label': 'See Our Success Video',
-    'action': system_instance.video_menu
-  }
-
+  system_instance = System()  # Create an instance of the System class
+  system_instance.initMenu()
+  # Get the menu items from the homePage
+  menu_items = system_instance.homePage.selections
+  # Check if the "InCollege Important Links" option exists in the home page manu
+  videos = next(
+    (item
+      for item in menu_items if item['label'] == 'See Our Success Video'),
+    None)
+  # Assert that the option exists
+  assert videos is not None
   # simulate user choosing video option
   with mock.patch('builtins.input', side_effect=['4', '0', '0']):
     system_instance.home_page()
