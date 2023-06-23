@@ -25,19 +25,20 @@ def temp_remove_accounts(system_instance):
   system_instance.cursor.execute("DELETE FROM accounts")
   if len(saved_accounts) > 0:
     system_instance.cursor.executemany(
-      "INSERT INTO accounts (username, password, fName, lName) VALUES (?, ?, ?, ?)",
+      "INSERT INTO accounts (username, password, fName, lName,university,major) VALUES (?, ?, ?, ?,?,?)",
       saved_accounts)
   system_instance.conn.commit()
 
 @pytest.fixture #test that user can input first and last name when registering
 def name_register(system_instance, temp_remove_accounts, capsys):
   system_instance.initMenu()
-  inputs = ['2', 'ahmad', 'ah', 'mad', 'Asibai1$', 'Asibai1$', 'ahmad', 'Asibai1$', '0', '0']
+  inputs = ['2', 'ahmad', 'ah', 'mad','USF','CS','Asibai1$', 'Asibai1$', 'ahmad', 'Asibai1$', '0', '0']
   with mock.patch('builtins.input', side_effect=inputs):
     system_instance.home_page()
   captured = capsys.readouterr()
-  output = captured.out.split('\n')
-  assert output[24] == 'Account created successfully.'#22nd line of ouput from the program should be Account created successfully
+  output = captured.out
+  expected_message = "Account created successfully"
+  assert expected_message in output #22nd line of ouput from the program should be Account created successfully
   yield
 
 # validate password
@@ -67,7 +68,7 @@ def test_login_successful(system_instance, capsys):
 
   login_success_msg = "You Have Successfully Logged In!"
 
-  with mock.patch('builtins.input',side_effect=['2', 'Jane35', 'Jane', 'Smith', 'Testing12*', 'Testing12*',
+  with mock.patch('builtins.input',side_effect=['2', 'Jane35', 'Jane', 'Smith', 'USF','Cs','Testing12*', 'Testing12*',
 'Jane35', 'Testing12*', '0', '0', '0']):
     system_instance.home_page()
 
@@ -99,7 +100,7 @@ def test_invalid_credentials(system_instance, capsys):
 
   login_success_msg = "Invalid Username/Password, Try Again!"
 
-  with mock.patch('builtins.input',side_effect=['2', 'Jane35', 'Jane', 'Smith', 'Testing12*', 'Testing12*',
+  with mock.patch('builtins.input',side_effect=['2', 'Jane35', 'Jane', 'Smith','UF','Art', 'Testing12*', 'Testing12*',
 'Jane35', 'Testing', '0', '0', '0']):
     system_instance.home_page()
 
@@ -136,7 +137,7 @@ def test_find_friend_under_construction(system_instance, name_register, capsys):
     system_instance.home_page()
   captured = capsys.readouterr()
   output = captured.out.split('\n')
-  assert '[2] Find A Friend' in output
+  assert '[2] Friends' in output
 
 def test_skill_option(system_instance, name_register, capsys):
   input = ['1', 'ahmad', 'Asibai1$', '0', '0']
@@ -320,7 +321,9 @@ def test_validate_username_not_unique(system_instance, capfd):
     password = generate_random_string(length, 1, 1, 1)
     fName = generate_random_string(8, 1, 0, 0)
     lName = generate_random_string(8, 1, 0, 0)
-    with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0','0']):
+    university= "USF"
+    major ="CS"
+    with mock.patch('builtins.input', side_effect=['2', username, fName, lName, university, major, password, password, username, password, '0','0']):
       system_instance.home_page()
   else:
     test_user = False
@@ -337,7 +340,7 @@ def test_validate_username_not_unique(system_instance, capfd):
 # also tests that new account are rejected once the account limit is reached
 def test_register_success(system_instance, capfd, temp_remove_accounts):
   system_instance.initMenu()
-  account_limit = 5
+  account_limit = 10
   msg_max_accounts = "Maximum Number Of Accounts Created!"
   msg_reg_success = "Account created successfully."
 
@@ -350,8 +353,10 @@ def test_register_success(system_instance, capfd, temp_remove_accounts):
     password = generate_random_string(length, 1, 1, 1)
     fName = generate_random_string(8, 1, 0, 0)
     lName = generate_random_string(8, 1, 0, 0)
+    university="US"
+    major="CS"
     # simulate 5 users creating an account
-    with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+    with mock.patch('builtins.input', side_effect=['2', username, fName, lName,university,major,password, password, username, password, '0', '0']):
       system_instance.home_page()
       
     std = capfd.readouterr()
@@ -403,8 +408,10 @@ def test_register_fail_username(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 1, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
+  university="USF"
+  major="CS"
   
-  with mock.patch('builtins.input', side_effect=['2',username, fName, lName, password, password, username, password, '0', '0']):
+  with mock.patch('builtins.input', side_effect=['2',username, fName, lName,university,major, password, password, username, password, '0', '0']):
       system_instance.home_page()
  
   std = capfd.readouterr()
@@ -418,7 +425,9 @@ def test_register_fail_username(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 1, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="CS"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, university,major,password, password, username, password, '0', '0']):
     system_instance.home_page()
     
   std = capfd.readouterr()
@@ -433,7 +442,9 @@ def test_register_fail_username(system_instance, capfd, temp_remove_accounts):
   for i in range(2):  # attempt to double register new user
     fName = generate_random_string(8, 1, 0, 0)
     lName = generate_random_string(8, 1, 0, 0)
-    with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+    university="USF"
+    major="CS"
+    with mock.patch('builtins.input', side_effect=['2', username, fName, lName, university,major,password, password, username, password, '0', '0']):
       system_instance.home_page()
     std = capfd.readouterr()
   assert msg_usr_not_unique in std.out.strip()  
@@ -456,7 +467,9 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = ''
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName,university,major, password, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -470,7 +483,9 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 1, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, university,major,password, password, username, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -484,7 +499,10 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 1, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName,university,major, password, password, username, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -498,7 +516,9 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 0, 1, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName,university,major,password, password, username, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -512,7 +532,9 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 0, 1)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName,university,major, password, password, username, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -526,7 +548,9 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
   password = generate_random_string(length, 1, 1, 0)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
-  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, password, password, username, password, '0', '0']):
+  university="USF"
+  major="Computer Sciences"
+  with mock.patch('builtins.input', side_effect=['2', username, fName, lName, university,major,password, password, username, password, '0', '0']):
     system_instance.home_page()
   std = capfd.readouterr()
   system_instance.cursor.execute(
@@ -538,18 +562,20 @@ def test_register_fail_password(system_instance, capfd, temp_remove_accounts):
 # tests that the register menu prompts the user for username and password
 def test_login_menu_register(system_instance, temp_remove_accounts,capsys):
   # register menu prompts
-  prompts = ["Enter Username:", "Enter First Name:", "Enter Last Name:", "Enter Password:", "Confirm Password:"]
+  prompts = ["Enter Username:", "Enter First Name: ", "Enter Last Name: ","Enter University Name: ","Enter Major:", "Enter Password: ", "Confirm Password:"]
   # simulated inputs for testing register menu
   register = '2'
   length = random.randint(5, 25)
   username = generate_random_string(length, 0, 1, 0)
   fName = generate_random_string(8, 1, 0, 0)
   lName = generate_random_string(8, 1, 0, 0)
+  university="USf"
+  major="CS"
   length = random.randint(8, 12)
   password = generate_random_string(length, 1, 1, 1)
   pass_check = 'fail'
   exit_app = '0'
-  inputs = [register, username, fName, lName, password, pass_check, exit_app]
+  inputs = [register, username, fName, lName,university, major,password, pass_check, exit_app]
 
   # run the registration menu with the simulated inputs
   with mock.patch('builtins.input', side_effect=inputs):
@@ -568,7 +594,7 @@ def test_login_menu_register(system_instance, temp_remove_accounts,capsys):
 # allowing users to return to the main/top level menu
 def test_return_option(system_instance, capfd):
   exit_opt = "[0] Log Out\n"
-  main_menu_opts = ['Job/Internship Search', 'Find A Friend', 'Learn A Skill', 'Useful Links', 'InCollege Important Links']
+  main_menu_opts = ['Job/Internship Search', 'Friends', 'Learn A Skill', 'Useful Links', 'InCollege Important Links']
   skills = ['Project Management', 'Networking', 'System Design', 'Coding', 'Professional Communication']
   # construct options for main and skill menus
   skill_choices = [
